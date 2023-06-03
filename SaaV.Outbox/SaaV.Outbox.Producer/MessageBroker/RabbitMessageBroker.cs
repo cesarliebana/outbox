@@ -1,7 +1,7 @@
 ﻿using RabbitMQ.Client;
 using System.Text;
 
-namespace SaaV.Outbox.Producer.Bus
+namespace SaaV.Outbox.Producer.MessageBroker
 {
     public class RabbitMQClient : IMessageBroker
     {

@@ -1,9 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+using SaaV.Outbox.Consumer.Domain;
+using SaaV.Outbox.Consumer.Events;
+using SaaV.Outbox.Consumer.MessageBroker;
+using SaaV.Outbox.Consumer.Persistence;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<ConsumerDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ConsumerConnectionString")));
+builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblyContaining<CreateDummyHandler>());
+builder.Services.AddSingleton<IMessageBroker, RabbitMQClient>(sp => new RabbitMQClient(builder.Configuration["RabbitMQ:HostName"]));
+
+builder.Services.AddHostedService<CreateDummyEventHandler>();
 
 var app = builder.Build();
 
@@ -21,24 +31,9 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
+app.MapGet("/test", () => Results.NoContent())
+.WithName("test")
 .WithOpenApi();
 
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

@@ -1,6 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using SaaV.Outbox.Producer.Bus;
+using SaaV.Outbox.Producer.MessageBroker;
 using SaaV.Outbox.Producer.Persistence;
 
 namespace SaaV.Outbox.Producer.Shared
@@ -26,6 +26,7 @@ namespace SaaV.Outbox.Producer.Shared
             OutboxMessage? outboxMessage = await _dbContext.OutboxMessages.FirstOrDefaultAsync(message => message.Id == id);
             if (outboxMessage != null)
             {
+                _logger.LogInformation($"Publishing message to queue: {outboxMessage.Payload}");
                 _messageBroker.PublishMessage("dummy-queue", outboxMessage.Payload);
 
                 outboxMessage.MarkAsProcessed();

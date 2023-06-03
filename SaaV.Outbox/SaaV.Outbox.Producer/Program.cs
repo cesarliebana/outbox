@@ -1,9 +1,9 @@
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
-using SaaV.Outbox.Producer.Bus;
 using SaaV.Outbox.Producer.Domain;
 using SaaV.Outbox.Producer.Endpoints;
+using SaaV.Outbox.Producer.MessageBroker;
 using SaaV.Outbox.Producer.Middlewares;
 using SaaV.Outbox.Producer.Persistence;
 

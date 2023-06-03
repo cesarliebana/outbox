@@ -1,4 +1,4 @@
-﻿namespace SaaV.Outbox.Producer.Bus
+﻿namespace SaaV.Outbox.Producer.MessageBroker
 {
     public interface IMessageBroker
     {
