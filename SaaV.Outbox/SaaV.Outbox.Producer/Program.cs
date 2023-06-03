@@ -1,6 +1,7 @@
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using SaaV.Outbox.Producer.Bus;
 using SaaV.Outbox.Producer.Domain;
 using SaaV.Outbox.Producer.Endpoints;
 using SaaV.Outbox.Producer.Middlewares;
@@ -34,6 +35,8 @@ builder.Services.AddHangfireServer(options =>
 
 builder.Services.AddDbContext<ProducerDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ProducerConnectionString")));
 builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblyContaining<CreateDummyHandler>());
+
+builder.Services.AddSingleton<IMessageBroker, RabbitMQClient>(sp => new RabbitMQClient(builder.Configuration["RabbitMQ:HostName"]));
 
 var app = builder.Build();
 
