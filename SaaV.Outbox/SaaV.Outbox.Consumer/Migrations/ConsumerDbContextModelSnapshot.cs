@@ -25,10 +25,7 @@ namespace SaaV.Outbox.Consumer.Migrations
             modelBuilder.Entity("SaaV.Outbox.Consumer.Domain.Dummy", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime");

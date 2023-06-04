@@ -36,6 +36,11 @@ namespace SaaV.Outbox.Consumer.Persistence
             #endregion
 
             #region Entities
+            modelBuilder.Entity<Dummy>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).ValueGeneratedNever();
+            });
             #endregion
         }
     }

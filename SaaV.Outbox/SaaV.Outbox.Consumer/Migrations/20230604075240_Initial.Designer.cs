@@ -12,7 +12,7 @@ using SaaV.Outbox.Consumer.Persistence;
 namespace SaaV.Outbox.Consumer.Migrations
 {
     [DbContext(typeof(ConsumerDbContext))]
-    [Migration("20230603194539_Initial")]
+    [Migration("20230604075240_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -28,10 +28,7 @@ namespace SaaV.Outbox.Consumer.Migrations
             modelBuilder.Entity("SaaV.Outbox.Consumer.Domain.Dummy", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime");
