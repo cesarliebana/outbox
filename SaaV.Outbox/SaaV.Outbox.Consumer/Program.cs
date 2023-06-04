@@ -16,7 +16,7 @@ builder.Services.AddDbContext<ConsumerDbContext>(options => options.UseSqlServer
 builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblyContaining<CreateDummyHandler>());
 builder.Services.AddSingleton<IMessageBroker, RabbitMQClient>();
 
-builder.Services.AddHostedService<CreateDummyEventHandler>();
+builder.Services.AddHostedService<EventsHandlerService>();
 
 var app = builder.Build();
 
@@ -28,11 +28,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
 app.MapGet("/test", () => Results.NoContent())
 .WithName("test")
