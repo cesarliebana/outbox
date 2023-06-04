@@ -1,8 +1,7 @@
-﻿using Azure.Core.Serialization;
-using MediatR;
-using Microsoft.Extensions.Hosting;
+﻿using MediatR;
 using SaaV.Outbox.Consumer.Domain;
 using SaaV.Outbox.Consumer.MessageBroker;
+using SaaV.Outbox.Consumer.Persistence;
 using System.Text.Json;
 
 namespace SaaV.Outbox.Consumer.Events
@@ -11,21 +10,28 @@ namespace SaaV.Outbox.Consumer.Events
     {
         private readonly IMessageBroker _messageBroker;
         private readonly IMediator _mediator;
+        private readonly IServiceProvider _services;
 
-        public CreateDummyEventHandler(IMessageBroker messageBroker, IMediator mediator)
+        public CreateDummyEventHandler(IServiceProvider services, IMessageBroker messageBroker, IMediator mediator)
         {
             _messageBroker = messageBroker;
             _mediator = mediator;
+            _services = services;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _messageBroker.ConsumeMessage("dummy-queue", async message => 
+            using (IServiceScope scope = _services.CreateScope())
             {
-                Console.WriteLine($"Received message: {message}");
-                CreateDummyRequest createDummyRequest = JsonSerializer.Deserialize<CreateDummyRequest>(message);
-                await _mediator.Send(createDummyRequest);
-            });
+                IRequestHandler<CreateDummyRequest> createDumyHandler = scope.ServiceProvider.GetRequiredService<IRequestHandler<CreateDummyRequest>>();
+                _messageBroker.ConsumeMessage("dummy-queue", async message =>
+                {
+                    Console.WriteLine($"Received message: {message}");
+                    CreateDummyRequest createDummyRequest = JsonSerializer.Deserialize<CreateDummyRequest>(message);
+
+                    await createDumyHandler.Handle(createDummyRequest, stoppingToken);
+                });
+            }
         }
     }
 }

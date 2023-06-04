@@ -6,8 +6,12 @@ using SaaV.Outbox.Producer.Endpoints;
 using SaaV.Outbox.Producer.MessageBroker;
 using SaaV.Outbox.Producer.Middlewares;
 using SaaV.Outbox.Producer.Persistence;
+using SaaV.Outbox.Producer.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOptions<HangfireSettings>().BindConfiguration("Hangfire").ValidateDataAnnotations();
+builder.Services.AddOptions<RabbitMQSettings>().BindConfiguration("RabbitMQ").ValidateDataAnnotations();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -27,16 +31,16 @@ builder.Services.AddHangfire(configuration => configuration
         PrepareSchemaIfNecessary = true
     }));
 
+HangfireSettings? hangfireSettings = builder.Configuration.GetSection("Hangfire").Get<HangfireSettings>();
 builder.Services.AddHangfireServer(options =>
 {
     options.Queues = new[] { "outbox-queue" };
-    options.WorkerCount = builder.Configuration.GetValue<int>("Hangfire:MaxWorkers");
+    options.WorkerCount = hangfireSettings!.MaxWorkers;
 });
 
 builder.Services.AddDbContext<ProducerDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ProducerConnectionString")));
 builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblyContaining<CreateDummyHandler>());
-
-builder.Services.AddSingleton<IMessageBroker, RabbitMQClient>(sp => new RabbitMQClient(builder.Configuration["RabbitMQ:HostName"]));
+builder.Services.AddSingleton<IMessageBroker, RabbitMQClient>();
 
 var app = builder.Build();
 

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using SaaV.Outbox.Consumer.Settings;
+using SaaV.Outbox.Producer.Settings;
 using System.Text;
 
-namespace SaaV.Outbox.Consumer.MessageBroker
+namespace SaaV.Outbox.Producer.MessageBroker
 {
     public class RabbitMQClient : IMessageBroker, IDisposable
     {
